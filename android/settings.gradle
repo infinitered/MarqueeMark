@@ -1,0 +1,3 @@
+rootProject.name = 'MarqueeMark'
+
+include ':app'
