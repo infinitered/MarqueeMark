@@ -4,33 +4,33 @@ import {
   View,
   Dimensions,
   TextInput,
-  TouchableOpacity,
-  Text,
-  Animated
+  Animated,
+  Easing
 } from 'react-native'
 
-const BUTTONS = ['One', 'Two', 'Three']
-
 export default class App extends Component {
-  state = { fontSize: 18, selected: null }
+  state = { fontSize: 18 }
   opacityValue = new Animated.Value(1)
 
   startAnimating = () => {
     let myAnimation
     // Fade out
-    this.opacityValue.setValue(1)
-    myAnimation = Animated.timing(this.opacityValue, {
-      toValue: 0,
-      duration: 5000
-    })
+    // this.opacityValue.setValue(1)
+    // myAnimation = Animated.timing(this.opacityValue, {
+    //   toValue: 0,
+    //   duration: 5000,
+    //   useNativeDriver: true
+    // })
 
     // Pulse
-    // myAnimation = Animated.loop(
-    //   Animated.timing(this.opacityValue, {
-    //     toValue: 0,
-    //     duration: 250
-    //   })
-    // )
+    myAnimation = Animated.loop(
+      Animated.timing(this.opacityValue, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.linear,
+        useNativeDriver: true
+      })
+    )
 
     myAnimation.start()
   }
@@ -43,22 +43,6 @@ export default class App extends Component {
     this.startAnimating()
   }
 
-  renderButtons = () => {
-    const { selected } = this.state
-    return BUTTONS.map((label, i) => {
-      const backgroundColor = selected === i ? 'green' : 'lightgrey'
-      return (
-        <TouchableOpacity
-          key={i}
-          style={[styles.btnWrapper, { backgroundColor }]}
-          onPress={() => this.setState({ selected: i })}
-        >
-          <Text>{label}</Text>
-        </TouchableOpacity>
-      )
-    })
-  }
-
   editText = (inputValue, inputStyle, isLandscape) => (
     <View>
       <TextInput
@@ -68,7 +52,6 @@ export default class App extends Component {
         editable={!isLandscape}
         autoFocus
       />
-      <View style={styles.btnContainer}>{this.renderButtons()}</View>
     </View>
   )
 
@@ -79,13 +62,18 @@ export default class App extends Component {
       borderWidth: isLandscape ? 0 : 1,
       fontSize
     }
+    // const spin = this.opacityValue.interpolate({
+    //   inputRange: [0, 1],
+    //   outputRange: ['1deg', '360deg']
+    // })
     const animatedStyle = {
       opacity: this.opacityValue
+      // transform: [{ rotate: spin }]
     }
     return (
       <View onLayout={this.onLayout} style={styles.container}>
         {isLandscape ? (
-          <Animated.Text key="hey" style={[animatedStyle]}>
+          <Animated.Text key="hey" style={[{ fontSize }, animatedStyle]}>
             {this.state.inputValue}
           </Animated.Text>
         ) : (
@@ -110,17 +98,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingLeft: 5,
     marginTop: 20
-  },
-  btnWrapper: {
-    height: 50,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 5
-  },
-  btnContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 5,
-    marginTop: 10
   }
 })
